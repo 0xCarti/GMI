@@ -1,6 +1,8 @@
 import json
 import secrets
 from datetime import datetime
+from os import listdir
+from os.path import isfile, join
 
 import flask
 from flask import Flask, redirect, render_template, url_for
@@ -106,6 +108,7 @@ def profile(username: str):
 
 
 @app.route('/code', methods=['POST'])
+@login_required
 def code():
     if flask.request.method == 'POST':
         username = flask.request.json['username']
@@ -113,6 +116,13 @@ def code():
         user_signup_codes[username] = code
         return redirect('/profile/' + username)
     return redirect('/error')
+
+
+@app.route('/artwork', methods=['POST', 'GET'])
+@login_required
+def artwork():
+    artwork_paths = [f for f in listdir('static/images/artwork') if isfile(join('static/images/artwork', f))]
+    return render_template('authenticated/artwork.html', artwork_paths=artwork_paths)
 
 
 @app.route('/database', methods=['POST', 'GET'])
