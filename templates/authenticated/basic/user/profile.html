@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+{% block title %}Profile{% endblock %}
+{% block style %}
+    <style>
+        label {
+            display: flex;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 16px;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        input[type="text"], input[type="password"] {
+            padding: 10px;
+            border-radius: 3px 0px 0px 3px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .row {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .form-row {
+            color: #555;
+            font-size: 16px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+
+        table {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        button {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .option {
+            width: 100px;
+            font-size: 18px;
+            padding: 5px;
+            border-radius: 7%;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        #row-inputs {
+            display: flex;
+            align-items: baseline;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-content: flex-start;
+            justify-content: space-between;
+        }
+    </style>
+{% endblock %}
+{% block main %}
+    <div id="login-form">
+        <div id="login-form-header">
+            <h1>{{ profile_user.name }}</h1>
+        </div>
+        <div id="login-form-body">
+            <div class="form-row">
+                <div style="display: inherit">
+                    <label style="margin-bottom: 0; padding-right: 5px" for="user-type">Admin:</label>
+                    <select name="user-type" id="user-type" class="option" disabled>
+                        <option value="{{ profile_user.admin }}" class="option">{{ profile_user.admin }}</option>
+                        {% if profile_user.admin %}
+                            <option value="user" class="option">False</option>
+                        {% else %}
+                            <option value="admin" class="option">True</option>
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <label for="username-input">Username</label>
+                <input style="margin-bottom: 20px" type="text" id="username-input" name="username" required autocomplete="off" disabled value="{{ profile_user.username }}">
+            </div>
+            <div class="row">
+                <label for="email-input">Email</label>
+                <input style="margin-bottom: 20px" type="text" id="email-input" name="email" autocomplete="off" disabled value="{{ profile_user.email }}">
+            </div>
+            <div class="row">
+                <label for="phone-input">Phone Number</label>
+                <input style="margin-bottom: 20px" type="text" id="phone-input" name="phone" autocomplete="off" disabled value="{{ profile_user.phone }}">
+            </div>
+            <div class="row">
+                <label for="password-input">Change Password</label>
+                <input type="password" id="password-input" name="password" required autocomplete="off">
+            </div>
+            <div class="row">
+                <label for="code-generator">Generate Code</label>
+                <div id="row-inputs">
+                    <input type="text" id="code-generator" name="code-generator" disabled autocomplete="off" value="{{ code }}">
+                    <button style="width: 50%;" class="primary-button" id="generate-code-button" onclick="generate_code()">Get Code</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="nav-buttons" id="buttons">
+                <button class="primary-button" id="login-button" onclick="save_user()">Save</button>
+                <button class="secondary-button" id="login-button" onclick="edit_user()">Edit</button>
+                <button class="submit-button" id="login-button" onclick="delete_user()">Delete</button>
+                <button class="submit-button" id="login-button" onclick="log_out()">Log Out</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script>
+        let user_type_selection = document.getElementById('user-type')
+        let username_input = document.getElementById('username-input')
+        let email_input = document.getElementById('email-input')
+        let phone_input = document.getElementById('phone-input')
+        let pass_input = document.getElementById('password-input')
+
+
+        function save_user() {
+            let profile_username = username_input.value
+            if ('{{ session_user.username }}' === username_input.value || {{ session_user.admin }}) {
+                let admin = user_type_selection.value
+                user_type_selection.disabled = true
+                let username = username_input.value
+                username_input.disabled = true
+                let email = email_input.value
+                email_input.disabled = true
+                let phone = phone_input.value
+                phone_input.disabled = true
+                let password = pass_input.value;
+
+
+                fetch("/profile/" + profile_username, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        phone: phone,
+                        password: password,
+                        admin: admin,
+                    }),
+                })
+                    .then(function (response) {
+                        if (!response.ok) {
+                            throw Error(response.statusText);
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error)
+                        return error
+                    });
+            }
+        }
+
+        function edit_user() {
+            phone_input.disabled = false
+            email_input.disabled = false
+            username_input.disabled = false
+            if ({{ session_user.admin }}) {
+                user_type_selection.disabled = false
+            }
+        }
+
+        function delete_user() {
+            if ({{ session_user.admin }}) {
+                fetch("/users", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        username: username_input.value
+                    }),
+                })
+                    .then(function (response) {
+                        if (response.redirected) {
+                            window.location.href = response.url
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error)
+                        return error
+                    });
+            }
+        }
+
+        function log_out() {
+            document.location.href = '/logout'
+        }
+
+        function generate_code() {
+            let result = '';
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const charactersLength = characters.length;
+            let counter = 0;
+            while (counter < 10) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                counter += 1;
+            }
+
+            fetch("/code", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    username: username_input.value,
+                    code: result
+                }),
+            })
+                .then(function (response) {
+                    if (response.redirected) {
+                        window.location.href = response.url
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error)
+                    return error
+                });
+        }
+    </script>
+{% endblock %}

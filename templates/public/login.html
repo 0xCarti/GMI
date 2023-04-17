@@ -1,0 +1,112 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='/stylesheets/global.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='/stylesheets/autocom.css') }}">
+    <script type="text/javascript" src="{{ url_for('static', filename='/scripts/cookies.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/sha256.js"></script>
+    <meta charset="UTF-8">
+    <title>{% block title %}Login{% endblock %}</title>
+    <style>
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 16px;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 3px 0 0 3px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .row {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .form-row label {
+            color: #555;
+            font-size: 16px;
+            padding-right: 10px;
+            box-sizing: border-box;
+        }
+
+        table {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        button {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="main">
+    <div id="login-form">
+        <div id="login-form-header">
+            <h1>Welcome to Hell</h1>
+        </div>
+        <div id="login-form-body">
+            <div class="row">
+                <label for="username-input">Username</label>
+                <input style="margin-bottom: 20px" type="text" id="username-input" name="username" required autocomplete="off">
+            </div>
+            <div class="row">
+                <label for="password-input">Password</label>
+                <input type="password" id="password-input" name="password" required autocomplete="off">
+            </div>
+        </div>
+        <div class="row">
+            <div class="nav-buttons" id="buttons">
+                <button class="primary-button" id="login-button" onclick="login()">Login</button>
+                <button class="secondary-button" id="request-login-button" onclick="document.location.href = '/signup'">Request Login</button>
+            </div>
+        </div>
+        <div id="login-form-footer">
+            <p style="text-align: center">Forgot password?</p>
+        </div>
+    </div>
+
+    <table class="item-table"></table>
+</div>
+<script>
+    const username_input = document.getElementById('username-input')
+    const password_input = document.getElementById('password-input')
+
+    function login() {
+        let username = username_input.value
+        let password = password_input.value
+        fetch("/login", {
+            method: "POST",
+            redirect: 'follow',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            }),
+        }).then((response) => {
+            if (response.redirected) {
+                setCookie('username', username, 31)
+                window.location.href = response.url
+            }else{
+                console.log('response was not redirected')
+                console.log(response.text())
+            }
+        })
+    }
+</script>
+</body>
+</html>

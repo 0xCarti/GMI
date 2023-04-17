@@ -1,0 +1,13 @@
+Flask
+Flask-Login
+Flask-Bcrypt
+Flask-WTF
+Flask-Migrate
+Flask-SQLAlchemy
+Flask-Testing
+python-decouple
+sqlmodel
+python-dotenv
+SQLAlchemy
+twilio
+Werkzeug

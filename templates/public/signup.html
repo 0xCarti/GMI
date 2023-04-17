@@ -1,0 +1,127 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='/stylesheets/global.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='/stylesheets/autocom.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/sha256.js"></script>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <style>
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-size: 16px;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 3px 0px 0px 3px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .row {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .form-row label {
+            color: #555;
+            font-size: 16px;
+            padding-right: 10px;
+            box-sizing: border-box;
+        }
+
+        table {
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+        }
+
+        button {
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="main">
+    <div id="login-form">
+        <div id="login-form-header">
+            <h1>Request Login</h1>
+        </div>
+        <div id="login-form-body">
+            <div class="row">
+                <label for="username-input">Username</label>
+                <input style="margin-bottom: 20px" type="text" id="username-input" name="username-input" required autocomplete="off">
+            </div>
+            <div class="row">
+                <label for="password-input">Password</label>
+                <input type="password" id="password-input" name="password" required autocomplete="off">
+            </div>
+            <div class="row">
+                <label for="name-input">Referral Code</label>
+                <input style="margin-bottom: 20px" type="text" id="code-input" name="code-input" required autocomplete="off">
+            </div>
+        </div>
+        <div class="row">
+            <div class="nav-buttons" id="buttons">
+                <button class="primary-button" id="login-button" onclick="submit()">Submit</button>
+            </div>
+        </div>
+        <div id="login-form-footer">
+            <p style="text-align: center">Already a user?</p>
+        </div>
+    </div>
+</div>
+<script>
+    const username_input = document.getElementById('username-input')
+    const password_input = document.getElementById('password-input')
+    const code_input = document.getElementById('code-input')
+
+    function submit() {
+        let username = username_input.value
+        let password = password_input.value
+        let code = code_input.value
+
+        fetch("/signup", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password,
+                code: code
+            }),
+        })
+            .then(function (response) {
+                if (response.redirected) {
+                    document.location.href = response.url
+                } else {
+                    alert('Talk to bryce, something failed here.')
+                }
+            })
+            .catch(function (error) {
+                return error
+            });
+    }
+</script>
+</body>
+</html>
