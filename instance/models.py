@@ -16,7 +16,6 @@ db = SQLAlchemy()
 class UserModel(UserMixin, db.Model):
     __tablename__ = 'users'
 
-    user_id = db.Column(db.Integer, unique=True, autoincrement=True, default=1)
     email = db.Column(db.String(80), unique=False)
     phone = db.Column(db.String(80), unique=False)
     phone_verification_date = db.Column(db.String(80), unique=False)
