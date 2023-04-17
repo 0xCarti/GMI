@@ -115,8 +115,11 @@
                 if (response.redirected) {
                     document.location.href = response.url
                 } else {
-                    alert('Talk to bryce, something failed here.')
+                    return response.text()
                 }
+            })
+            .then(function (text){
+                alert(text)
             })
             .catch(function (error) {
                 return error
