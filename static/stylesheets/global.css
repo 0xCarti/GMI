@@ -1,6 +1,7 @@
 body {
     font-family: Arial, sans-serif;
-    background: url(/static/images/bg.avif) no-repeat center center fixed;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url(/static/images/bg.png) no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -8,17 +9,31 @@ body {
 }
 
 .main {
-    background-color: #fff;
+    background-color: transparent;
     padding: 20px;
     border-radius: 0 0 5px 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    max-width: 500px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 500px;
     position: relative;
+}
+
+.vert-row {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.hor-row {
+    color: #555;
+    font-size: 16px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+    justify-content: center;
+    align-items: baseline;
 }
 
 h1 {
@@ -34,17 +49,42 @@ h1 {
     margin-top: 20px;
 }
 
+label {
+    display: flex;
+    margin-bottom: 5px;
+    color: white;
+    font-size: 16px;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+input[type="text"], input[type="password"] {
+    padding: 10px;
+    border-radius: 3px 3px 3px 3px;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+    font-size: 16px;
+    box-sizing: border-box;
+    color: white;
+    outline: none;
+}
+
+input[type="text"]:enabled, input[type="password"]:enabled {
+    padding: 10px;
+    border-radius: 3px 3px 3px 3px;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+    font-size: 16px;
+    box-sizing: border-box;
+    color: black;
+    outline: none;
+}
+
 #buttons {
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
     width: 100%;
-    margin-bottom: 20px;
-}
-
-#global-buttons {
-    margin-top: -20px;
-    width: 50%;
     margin-bottom: 20px;
 }
 
@@ -55,6 +95,31 @@ button {
     border-radius: 3px;
     cursor: pointer;
     font-size: 16px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.select-option {
+    width: 100px;
+    font-size: 18px;
+    padding: 5px;
+    border-radius: 7%;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+    outline: none;
+}
+
+p {
+    text-align: center;
+    color: white;
+}
+
+a, a:visited {
+    text-decoration: none;
+    color: white;
+    cursor: pointer;
+    width: 100%;
+    display: block;
 }
 
 .primary-button {
@@ -81,16 +146,6 @@ button {
     background-color: #0577d9;
 }
 
-.item-col {
-    width: 250px;
-    overflow-wrap: anywhere;
-}
-
-.amount-col {
-    width: 50px;
-    text-align: center;
-}
-
 .footer {
     text-align: center;
     font-style: italic;
@@ -100,12 +155,11 @@ button {
 .nav-row {
     display: flex;
     flex-direction: row;
-    background-color: #56a4e8;
-    justify-content: center;
+    background-color: transparent;
+    justify-content: space-evenly;
     position: relative;
     width: 540px;
     margin: 0 auto;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     border-radius: 5px 5px 0 0;
     align-items: center;
 }
@@ -115,7 +169,7 @@ a.nav-link:link {
     padding: 10px;
     font-size: 18px;
     text-decoration: inherit;
-    color: inherit;
+    color: white;
     cursor: auto;
 }
 
@@ -124,19 +178,12 @@ a.nav-link:visited {
     padding: 10px;
     font-size: 18px;
     text-decoration: inherit;
-    color: inherit;
+    color: white;
     cursor: auto;
 }
 
 a.nav-link:hover {
-    background-color: #dddddd;
     cursor: pointer;
-}
-
-a, a:visited {
-    text-decoration: none;
-    color: #0577d9;
-
 }
 
 @media only screen
@@ -152,7 +199,6 @@ and (-webkit-device-pixel-ratio: 2) {
         background-color: #fff;
         padding: 20px;
         border-radius: 0 0 5px 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -164,11 +210,10 @@ and (-webkit-device-pixel-ratio: 2) {
         display: flex;
         flex-direction: row;
         background-color: #56a4e8;
-        justify-content: center;
+        justify-content: space-evenly;
         position: relative;
         width: 410px;
         margin: 0 auto;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         border-radius: 5px 5px 0 0;
         align-items: center;
     }

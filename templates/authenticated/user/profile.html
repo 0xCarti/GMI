@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% block title %}Profile{% endblock %}
+{% block style %}
+    <style>
+        #form {
+            display: flex;
+            justify-content: space-evenly;
+            margin-bottom: 10px;
+            flex-direction: column;
+        }
+    </style>
+{% endblock %}
+{% block main %}
+    <h1>{{ profile_user.username }}</h1>
+    <div class="hor-row">
+        <label style="margin-bottom: 0; padding-right: 5px" for="user-type">Admin:</label>
+        <select name="user-type" id="user-type" class="select-option" disabled>
+            <option value="{{ profile_user.admin }}" class="select-option">{{ profile_user.admin }}</option>
+            {% if profile_user.admin %}
+                <option value="user" class="select-option">False</option>
+            {% else %}
+                <option value="admin" class="select-option">True</option>
+            {% endif %}
+        </select>
+    </div>
+    <div>
+        <div class="vert-row">
+            <label for="username-input">Username</label>
+            <input style="margin-bottom: 20px" type="text" id="username-input" name="username" required autocomplete="off" disabled value="{{ profile_user.username }}">
+        </div>
+        <div class="vert-row">
+            <label for="email-input">Email</label>
+            <input style="margin-bottom: 20px" type="text" id="email-input" name="email" autocomplete="off" disabled value="{{ profile_user.email }}">
+        </div>
+        <div class="vert-row">
+            <label for="phone-input">Phone Number</label>
+            <input style="margin-bottom: 20px" type="text" id="phone-input" name="phone" autocomplete="off" disabled value="{{ profile_user.phone }}">
+        </div>
+        <div class="vert-row">
+            <label for="password-input">Change Password</label>
+            <input type="password" id="password-input" name="password" required autocomplete="off">
+        </div>
+        <div class="vert-row">
+            <label for="code-generator">Generate Code</label>
+            <div class="hor-row">
+                <input type="text" id="code-generator" name="code-generator" disabled autocomplete="off" value="{{ code }}">
+                <button style="width: 50%;" class="primary-button" id="generate-code-button" onclick="generate_code()">Get Code</button>
+            </div>
+        </div>
+        <form id="form" method="post" enctype=multipart/form-data action="/upload">
+            <input class="custom-file-input" id="file_input" type="file" name="file" onchange="file_change()" hidden>
+            <p style="text-align: center; margin-top: -5px; color: white;" id="file_name">No File Selected</p>
+            <div class="hor-row">
+                <button class="primary-button" id="select-button">Select</button>
+                <button class="primary-button" id="upload-button">Upload</button>
+            </div>
+        </form>
+        <div class="nav-buttons" id="buttons">
+            <button class="primary-button" onclick="save_user()">Save</button>
+            <button class="secondary-button" onclick="edit_user()">Edit</button>
+            <button class="submit-button" onclick="delete_user()">Delete</button>
+            <button class="submit-button" onclick="log_out()">Log Out</button>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script>
+        let user_type_selection = document.getElementById('user-type')
+        let username_input = document.getElementById('username-input')
+        let email_input = document.getElementById('email-input')
+        let phone_input = document.getElementById('phone-input')
+        let pass_input = document.getElementById('password-input')
+        const form = document.getElementById('form')
+        const file_name = document.getElementById('file_name')
+        const select_button = document.getElementById('select-button')
+        const upload_button = document.getElementById('upload-button')
+
+        if ('{{ session_user.admin }}' === 'True') {
+            form.hidden = false
+        } else {
+            form.hidden = true
+        }
+
+        select_button.addEventListener('click', function (event) {
+            event.preventDefault()
+            const file_input = document.getElementById('file_input')
+            file_input.click()
+        })
+
+        upload_button.addEventListener('click', function (event) {
+            event.preventDefault()
+            let formdata = new FormData(form)
+            console.log(formdata.get('file'))
+            $.ajax({
+                type: 'POST',
+                url: '/upload',
+                data: formdata,
+                contentType: false,
+                cache: false,
+                processData: false,
+                async: false,
+                success: function (data) {
+                    if (data === 'success') {
+                        success_popup(data)
+                    } else {
+                        failure_popup(data)
+                    }
+                    file_name.innerText = 'No file selected'
+                },
+            });
+        })
+
+
+        function save_user() {
+            let profile_username = username_input.value
+            if ('{{ session_user.username }}' === username_input.value || {{ session_user.admin }}) {
+                let admin = user_type_selection.value
+                user_type_selection.disabled = true
+                let username = username_input.value
+                username_input.disabled = true
+                let email = email_input.value
+                email_input.disabled = true
+                let phone = phone_input.value
+                phone_input.disabled = true
+                let password = pass_input.value;
+
+
+                fetch("/profile/" + profile_username, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        phone: phone,
+                        password: password,
+                        admin: admin,
+                    }),
+                })
+                    .then(function (response) {
+                        if (!response.ok) {
+                            throw Error(response.statusText);
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error)
+                        return error
+                    });
+            }
+        }
+
+        function edit_user() {
+            phone_input.disabled = false
+            email_input.disabled = false
+            username_input.disabled = false
+            if ({{ session_user.admin }}) {
+                user_type_selection.disabled = false
+            }
+        }
+
+        function delete_user() {
+            if ({{ session_user.admin }}) {
+                fetch("/users", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        username: username_input.value
+                    }),
+                })
+                    .then(function (response) {
+                        if (response.redirected) {
+                            window.location.href = response.url
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error)
+                        return error
+                    });
+            }
+        }
+
+        function log_out() {
+            document.location.href = '/logout'
+        }
+
+        function generate_code() {
+            let result = '';
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            const charactersLength = characters.length;
+            let counter = 0;
+            while (counter < 10) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                counter += 1;
+            }
+
+            fetch("/code", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    username: username_input.value,
+                    code: result
+                }),
+            })
+                .then(function (response) {
+                    if (response.redirected) {
+                        window.location.href = response.url
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error)
+                    return error
+                });
+        }
+
+        function file_change() {
+            file_name.innerText = document.getElementById('file_input').files[0]['name']
+        }
+    </script>
+{% endblock %}

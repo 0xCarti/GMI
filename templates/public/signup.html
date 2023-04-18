@@ -2,92 +2,64 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='/stylesheets/global.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='/stylesheets/autocom.css') }}">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/core.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/sha256.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='/scripts/popups.js') }}"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="{{url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
     <meta charset="UTF-8">
-    <title>{% block title %}{% endblock %}</title>
+    <title>{% block title %}Sign Up{% endblock %}</title>
     <style>
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-size: 16px;
-        }
-
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            border-radius: 3px 0px 0px 3px;
-            border: 1px solid #ddd;
+        .alert-box {
+            padding: 15px;
             margin-bottom: 20px;
-            font-size: 16px;
-            box-sizing: border-box;
+            border: 1px solid transparent;
+            border-radius: 4px;
         }
 
-        .row {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
+        .success {
+            color: #3c763d;
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+            display: none;
         }
 
-        .form-row label {
-            color: #555;
-            font-size: 16px;
-            padding-right: 10px;
-            box-sizing: border-box;
+        .failure {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+            display: none;
         }
 
-        table {
-            align-items: center;
-            display: flex;
-            flex-direction: column;
-        }
-
-        button {
-            margin-left: 5px;
-            margin-right: 5px;
-        }
-
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
-
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
+        .warning {
+            color: #8a6d3b;
+            background-color: #fcf8e3;
+            border-color: #faebcc;
+            display: none;
         }
     </style>
 </head>
 <body>
+<div class="alert-box success">Successful Alert !!!</div>
+<div class="alert-box failure">Failure Alert !!!</div>
+<div class="alert-box warning">Warning Alert !!!</div>
 <div class="main">
-    <div id="login-form">
-        <div id="login-form-header">
-            <h1>Request Login</h1>
+    <div style="width: 250px;">
+        <h1>Request Login</h1>
+        <div class="vert-row">
+            <label for="username-input">Username</label>
+            <input style="margin-bottom: 20px" type="text" id="username-input" name="username-input" required autocomplete="off">
         </div>
-        <div id="login-form-body">
-            <div class="row">
-                <label for="username-input">Username</label>
-                <input style="margin-bottom: 20px" type="text" id="username-input" name="username-input" required autocomplete="off">
-            </div>
-            <div class="row">
-                <label for="password-input">Password</label>
-                <input type="password" id="password-input" name="password" required autocomplete="off">
-            </div>
-            <div class="row">
-                <label for="name-input">Referral Code</label>
-                <input style="margin-bottom: 20px" type="text" id="code-input" name="code-input" required autocomplete="off">
-            </div>
+        <div class="vert-row">
+            <label for="password-input">Password</label>
+            <input type="password" id="password-input" name="password" required autocomplete="off">
         </div>
-        <div class="row">
-            <div class="nav-buttons" id="buttons">
-                <button class="primary-button" id="login-button" onclick="submit()">Submit</button>
-            </div>
+        <div class="vert-row">
+            <label for="code-input">Referral Code</label>
+            <input style="margin-bottom: 20px" type="text" id="code-input" name="code-input" required autocomplete="off">
         </div>
-        <div id="login-form-footer">
-            <p style="text-align: center">Already a user?</p>
+        <div class="nav-buttons" id="buttons">
+            <button class="primary-button" id="login-button" onclick="submit()">Submit</button>
         </div>
+        <a style="text-align: center" href="/login">Already a user?</a>
     </div>
 </div>
 <script>
@@ -118,8 +90,8 @@
                     return response.text()
                 }
             })
-            .then(function (text){
-                alert(text)
+            .then(function (text) {
+                failure_popup(text)
             })
             .catch(function (error) {
                 return error

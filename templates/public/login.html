@@ -2,83 +2,63 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='/stylesheets/global.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='/stylesheets/autocom.css') }}">
     <script type="text/javascript" src="{{ url_for('static', filename='/scripts/cookies.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/core.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/sha256.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='/scripts/popups.js') }}"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="{{url_for('static', filename='jquery.js') }}">\x3C/script>')</script>
     <meta charset="UTF-8">
-    <title>{% block title %}Login{% endblock %}</title>
     <style>
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-size: 16px;
-        }
-
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            border-radius: 3px 0 0 3px;
-            border: 1px solid #ddd;
+        .alert-box {
+            padding: 15px;
             margin-bottom: 20px;
-            font-size: 16px;
-            box-sizing: border-box;
+            border: 1px solid transparent;
+            border-radius: 4px;
         }
 
-        .row {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
+        .success {
+            color: #3c763d;
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+            display: none;
         }
 
-        .form-row label {
-            color: #555;
-            font-size: 16px;
-            padding-right: 10px;
-            box-sizing: border-box;
+        .failure {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+            display: none;
         }
 
-        table {
-            align-items: center;
-            display: flex;
-            flex-direction: column;
-        }
-
-        button {
-            margin-left: 5px;
-            margin-right: 5px;
+        .warning {
+            color: #8a6d3b;
+            background-color: #fcf8e3;
+            border-color: #faebcc;
+            display: none;
         }
     </style>
+    <title>{% block title %}Login{% endblock %}</title>
 </head>
 <body>
+<div class="alert-box success">Successful Alert !!!</div>
+<div class="alert-box failure">Failure Alert !!!</div>
+<div class="alert-box warning">Warning Alert !!!</div>
 <div class="main">
-    <div id="login-form">
-        <div id="login-form-header">
-            <h1>Welcome to Hell</h1>
+    <h1>Welcome to Hell</h1>
+    <div style="width: 250px">
+        <div class="vert-row">
+            <label for="username-input">Username</label>
+            <input style="margin-bottom: 20px" type="text" id="username-input" name="username" required autocomplete="off">
         </div>
-        <div id="login-form-body">
-            <div class="row">
-                <label for="username-input">Username</label>
-                <input style="margin-bottom: 20px" type="text" id="username-input" name="username" required autocomplete="off">
-            </div>
-            <div class="row">
-                <label for="password-input">Password</label>
-                <input type="password" id="password-input" name="password" required autocomplete="off">
-            </div>
+        <div class="vert-row">
+            <label for="password-input">Password</label>
+            <input type="password" id="password-input" name="password" required autocomplete="off">
         </div>
-        <div class="row">
-            <div class="nav-buttons" id="buttons">
-                <button class="primary-button" id="login-button" onclick="login()">Login</button>
-                <button class="secondary-button" id="request-login-button" onclick="document.location.href = '/signup'">Request Login</button>
-            </div>
-        </div>
-        <div id="login-form-footer">
-            <p style="text-align: center">Forgot password?</p>
+        <div class="nav-buttons" id="buttons">
+            <button class="primary-button" id="login-button" onclick="login()">Login</button>
+            <button class="secondary-button" id="request-login-button" onclick="document.location.href = '/signup'">Request Login</button>
         </div>
     </div>
-
-    <table class="item-table"></table>
+    <a style="text-align: center" href="/reset">Forgot password?</a>
 </div>
 <script>
     const username_input = document.getElementById('username-input')
@@ -97,14 +77,18 @@
                 username: username,
                 password: password
             }),
-        }).then((response) => {
+        }).then(function (response) {
             if (response.redirected) {
                 setCookie('username', username, 31)
                 window.location.href = response.url
-            }else{
-                console.log('response was not redirected')
-                console.log(response.text())
+            } else {
+                return response.text()
             }
+        }).then(function (text) {
+            failure_popup(text)
+        }).catch(function (error) {
+            console.log(error)
+            return error
         })
     }
 </script>

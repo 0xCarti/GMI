@@ -60,3 +60,7 @@ class UserModel(UserMixin, db.Model):
 @login.user_loader
 def load_user(username: str):
     return UserModel.query.get(username)
+
+
+
+
