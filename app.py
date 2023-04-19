@@ -80,7 +80,11 @@ def reset():
 @app.route('/', methods=['POST', 'GET'])
 @login_required
 def home():  # put application's code here
-    render_template('public/login.html')
+    if current_user.is_authenticated:
+        return redirect(f'/profile/{current_user.username}')
+    else:
+        return redirect('/login')
+
 
 
 @app.route('/profile/<username>', methods=['POST', 'GET'])
