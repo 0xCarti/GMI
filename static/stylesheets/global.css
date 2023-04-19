@@ -23,6 +23,7 @@ body {
     display: flex;
     flex-direction: column;
     width: 100%;
+    margin-bottom: 20px;
 }
 
 .hor-row {
@@ -33,7 +34,7 @@ body {
     flex-direction: row;
     margin-bottom: 10px;
     justify-content: center;
-    align-items: baseline;
+    align-items: center;
 }
 
 h1 {
@@ -62,7 +63,6 @@ input[type="text"], input[type="password"] {
     padding: 10px;
     border-radius: 3px 3px 3px 3px;
     border: 1px solid #ddd;
-    margin-bottom: 20px;
     font-size: 16px;
     box-sizing: border-box;
     color: white;
@@ -73,11 +73,21 @@ input[type="text"]:enabled, input[type="password"]:enabled {
     padding: 10px;
     border-radius: 3px 3px 3px 3px;
     border: 1px solid #ddd;
-    margin-bottom: 20px;
     font-size: 16px;
     box-sizing: border-box;
     color: black;
     outline: none;
+}
+
+textarea {
+    padding: 5px 10px 5px 10px;
+    border-radius: 3px 3px 3px 3px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    box-sizing: border-box;
+    color: black;
+    outline: none;
+    resize: none;
 }
 
 #buttons {
@@ -158,7 +168,6 @@ a, a:visited {
     background-color: transparent;
     justify-content: space-evenly;
     position: relative;
-    width: 540px;
     margin: 0 auto;
     border-radius: 5px 5px 0 0;
     align-items: center;

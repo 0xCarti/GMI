@@ -1,3 +1,5 @@
-Flask~=2.2.3
-Werkzeug~=2.2.3
-twilio~=8.0.0
+Flask
+Werkzeug
+twilio
+flask_login
+flask-sqlalchemy

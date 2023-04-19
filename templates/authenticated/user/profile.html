@@ -8,61 +8,102 @@
             margin-bottom: 10px;
             flex-direction: column;
         }
+
+        img {
+            width: 50px;
+            object-fit: contain;
+            cursor: pointer;
+        }
+
+        a, a:visited {
+            width: 75px;
+            display: flex;
+            justify-content: center;
+            cursor: default;
+        }
     </style>
 {% endblock %}
 {% block main %}
-    <h1>{{ profile_user.username }}</h1>
-    <div class="hor-row">
-        <label style="margin-bottom: 0; padding-right: 5px" for="user-type">Admin:</label>
-        <select name="user-type" id="user-type" class="select-option" disabled>
-            <option value="{{ profile_user.admin }}" class="select-option">{{ profile_user.admin }}</option>
-            {% if profile_user.admin %}
-                <option value="user" class="select-option">False</option>
-            {% else %}
-                <option value="admin" class="select-option">True</option>
-            {% endif %}
-        </select>
+    <div id="profile-view">
+        <h1>{{ profile_user.username }}</h1>
+        <div>
+            <div class="hor-row">
+                <label style="margin-bottom: 0; padding-right: 5px" for="user-type">Admin:</label>
+                <select name="user-type" id="user-type" class="select-option" disabled style="margin-right: 20px">
+                    <option value="{{ profile_user.admin }}" class="select-option">{{ profile_user.admin }}</option>
+                    {% if profile_user.admin %}
+                        <option value="user" class="select-option">False</option>
+                    {% else %}
+                        <option value="admin" class="select-option">True</option>
+                    {% endif %}
+                </select>
+                <a href="/messages/{{ profile_user.username }}"><img src="{{ url_for('static', filename='/images/inbox3.avif') }}" alt=""></a>
+                <a><img src="{{ url_for('static', filename='/images/inbox3.avif') }}" alt="" onclick="show_create_message()"></a>
+            </div>
+            <div class="vert-row">
+                <label for="username-input">Username</label>
+                <input type="text" id="username-input" name="username" required autocomplete="off" disabled value="{{ profile_user.username }}">
+            </div>
+            <div class="vert-row">
+                <label for="email-input">Email</label>
+                <input type="text" id="email-input" name="email" autocomplete="off" disabled value="{{ profile_user.email }}">
+            </div>
+            <div class="vert-row">
+                <label for="phone-input">Phone Number</label>
+                <input type="text" id="phone-input" name="phone" autocomplete="off" disabled value="{{ profile_user.phone }}">
+            </div>
+            <div class="vert-row">
+                <label for="password-input">Change Password</label>
+                <input type="password" id="password-input" name="password" required autocomplete="off">
+            </div>
+            <div class="vert-row">
+                <label for="code-generator">Generate Code</label>
+                <div class="hor-row">
+                    <input type="text" id="code-generator" name="code-generator" disabled autocomplete="off" value="{{ code }}">
+                    <button style="width: 50%;" class="primary-button" id="generate-code-button" onclick="generate_code()">Get Code</button>
+                </div>
+            </div>
+            <form id="form" method="post" enctype=multipart/form-data action="/upload">
+                <input class="custom-file-input" id="file_input" type="file" name="file" onchange="file_change()" hidden>
+                <p style="text-align: center; margin-top: -5px; color: white;" id="file_name">No File Selected</p>
+                <div class="hor-row">
+                    <button class="primary-button" id="select-button">Select</button>
+                    <button class="primary-button" id="upload-button">Upload</button>
+                </div>
+            </form>
+            <div class="nav-buttons" id="buttons">
+                <button class="primary-button" onclick="save_user()">Save</button>
+                <button class="secondary-button" onclick="edit_user()">Edit</button>
+                <button class="submit-button" onclick="delete_user()">Delete</button>
+                <button class="submit-button" onclick="log_out()">Log Out</button>
+            </div>
+        </div>
     </div>
-    <div>
-        <div class="vert-row">
-            <label for="username-input">Username</label>
-            <input style="margin-bottom: 20px" type="text" id="username-input" name="username" required autocomplete="off" disabled value="{{ profile_user.username }}">
-        </div>
-        <div class="vert-row">
-            <label for="email-input">Email</label>
-            <input style="margin-bottom: 20px" type="text" id="email-input" name="email" autocomplete="off" disabled value="{{ profile_user.email }}">
-        </div>
-        <div class="vert-row">
-            <label for="phone-input">Phone Number</label>
-            <input style="margin-bottom: 20px" type="text" id="phone-input" name="phone" autocomplete="off" disabled value="{{ profile_user.phone }}">
-        </div>
-        <div class="vert-row">
-            <label for="password-input">Change Password</label>
-            <input type="password" id="password-input" name="password" required autocomplete="off">
-        </div>
-        <div class="vert-row">
-            <label for="code-generator">Generate Code</label>
+    <div id="message-view" hidden>
+        <h1>Create Message</h1>
+        <div>
             <div class="hor-row">
-                <input type="text" id="code-generator" name="code-generator" disabled autocomplete="off" value="{{ code }}">
-                <button style="width: 50%;" class="primary-button" id="generate-code-button" onclick="generate_code()">Get Code</button>
+                <label style="margin-bottom: 0; padding-right: 10px; font-size: 18px" for="recipient-select">Send To:</label>
+                <select name="recipient-select" id="recipient-select" class="select-option" style="width: 250px">
+                    <option value="0xCarti" class="select-option">0xCarti</option>
+                </select>
             </div>
-        </div>
-        <form id="form" method="post" enctype=multipart/form-data action="/upload">
-            <input class="custom-file-input" id="file_input" type="file" name="file" onchange="file_change()" hidden>
-            <p style="text-align: center; margin-top: -5px; color: white;" id="file_name">No File Selected</p>
-            <div class="hor-row">
-                <button class="primary-button" id="select-button">Select</button>
-                <button class="primary-button" id="upload-button">Upload</button>
+            <div class="vert-row">
+                <label for="subject-input">Subject</label>
+                <input type="text" id="subject-input" name="subject" required autocomplete="off">
             </div>
-        </form>
-        <div class="nav-buttons" id="buttons">
-            <button class="primary-button" onclick="save_user()">Save</button>
-            <button class="secondary-button" onclick="edit_user()">Edit</button>
-            <button class="submit-button" onclick="delete_user()">Delete</button>
-            <button class="submit-button" onclick="log_out()">Log Out</button>
+            <div class="vert-row">
+                <label for="message-input">Message</label>
+                <textarea id="message-input" name="message" rows="4" cols="50"></textarea>
+            </div>
+            <div class="nav-buttons" id="buttons">
+                <button class="primary-button" onclick="send_message()">Send</button>
+                <button class="submit-button" onclick="show_profile()">Back</button>
+            </div>
         </div>
     </div>
 {% endblock %}
+<div></div>
 {% block script %}
     <script>
         let user_type_selection = document.getElementById('user-type')
@@ -219,6 +260,20 @@
 
         function file_change() {
             file_name.innerText = document.getElementById('file_input').files[0]['name']
+        }
+
+        function show_create_message() {
+            $("#profile-view").fadeOut(400);
+            $("#message-view").fadeIn(800);
+        }
+
+        function send_message() {
+
+        }
+
+        function show_profile() {
+            $("#message-view").fadeOut(400);
+            $("#profile-view").fadeIn(800)
         }
     </script>
 {% endblock %}

@@ -8,7 +8,6 @@ from flask_login import LoginManager
 from twilio.base.exceptions import TwilioRestException
 from twilio.rest import Client
 
-
 login = LoginManager()
 db = SQLAlchemy()
 
@@ -23,6 +22,8 @@ class UserModel(UserMixin, db.Model):
     password_hash = db.Column(db.String(), unique=False)
     admin = db.Column(db.Boolean, default=False, unique=False)
     active = db.Column(db.Boolean, default=False, unique=False)
+    sent_messages = db.Column(db.String(), default='')
+    received_messages = db.Column(db.String(), default='')
     last_login = db.Column(db.String(80), unique=False)
 
     def set_password(self, password):
@@ -62,5 +63,14 @@ def load_user(username: str):
     return UserModel.query.get(username)
 
 
+class MessageModel(db.Model):
+    __tablename__ = 'messages'
 
+    id = db.Column(db.Integer(), unique=True, autoincrement=True, primary_key=True)
+    to_username = db.Column(db.String(100), unique=False)
+    from_username = db.Column(db.String(100), unique=False)
+    seen = db.Column(db.Boolean, default=False, unique=False)
+    date_sent = db.Column(db.DateTime(), unique=False)
 
+    def get_id(self):
+        return self.id

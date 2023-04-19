@@ -149,12 +149,36 @@ def audio(file: str):
     return render_template('authenticated/artwork.html', artwork_paths=artwork_paths)
 
 
-@app.route('/messages/<username>', methods=['POST', 'GET'])
-@app.route('/messages', methods=['POST', 'GET'], defaults={'username': ''})
+@app.route('/messages/<username>/<id>', methods=['POST', 'GET'])
+@app.route('/messages/<username>', methods=['POST', 'GET'], defaults={'id': ''})
+@app.route('/messages', methods=['POST', 'GET'], defaults={'username': '', 'id': ''})
 @login_required
-def messages(username: str):
-    artwork_paths = [f for f in listdir('static/images/artwork') if isfile(join('static/images/artwork', f))]
-    return render_template('authenticated/artwork.html', artwork_paths=artwork_paths)
+def messages(username: str, id: int):
+    if username == '' and id == '':
+        # display global messages
+        pass
+    elif id == '':
+        # display inbox of messages for user
+        pass
+    else:
+        # display message for user
+        pass
+
+
+@app.route('/message', methods=['POST', 'GET'])
+def message():
+    if flask.request.method == 'POST':
+        mode = flask.request.json['mode']
+        if mode == 'send':
+            # get data to send message
+            pass
+        elif mode == 'delete':
+            # get data top delete message by id
+            pass
+        else:
+            return 'Unknown message mode.'
+    elif flask.request.method == 'GET':
+        return render_template('public/error.html', error='GET request not allowed.')
 
 
 @app.route('/carts', methods=['POST', 'GET'])
@@ -238,8 +262,7 @@ def database():
 
 @app.route('/error', methods=['POST', 'GET'])
 def error():
-    artwork_paths = [f for f in listdir('static/images/artwork') if isfile(join('static/images/artwork', f))]
-    return render_template('authenticated/artwork.html', artwork_paths=artwork_paths)
+    return render_template('public/error.html', error='GET request not allowed.')
 
 
 def allowed_file(filename):

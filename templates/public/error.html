@@ -1,10 +1,13 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html lang="en">
 <head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='/stylesheets/global.css') }}">
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>{% block title %}Error{% endblock %}</title>
 </head>
 <body>
-
+<div class="main">
+    <h1>{{ error }}</h1>
+</div>
 </body>
 </html>
